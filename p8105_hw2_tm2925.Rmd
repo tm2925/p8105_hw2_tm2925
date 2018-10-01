@@ -7,3 +7,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
+
+```{r read in data1}
+transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", col_names = TRUE, na = ".") %>% 
+  janitor::clean_names(transit_data) 
+  skimr::skim(transit_data)
+```
+
+```{r create data frame}
+transit_df = tibble(transit_data, 
+select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ADA) %>% 
+ifelse(entry == "yes", 1, ifelse(entry == "no", 0)) %>% 
+distinct(transit_df$line)
+)
+```
+
+
+
