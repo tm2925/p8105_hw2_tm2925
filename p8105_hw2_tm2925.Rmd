@@ -6,21 +6,36 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(janitor)
+library(readxl)
 ```
 
 ```{r read in data1}
-transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", col_names = TRUE, na = ".") %>% 
-  janitor::clean_names(transit_data) 
+transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") 
   skimr::skim(transit_data)
 ```
 
-```{r create data frame}
-transit_df = tibble(transit_data, 
-select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ADA) %>% 
-ifelse(entry == "yes", 1, ifelse(entry == "no", 0)) %>% 
-distinct(transit_df$line)
-)
+```{r tidy transit data}
+  select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ADA) %>% 
+  gather(transit_data, key = route, value = route_number, route1:route11) %>% 
+  ifelse(entry == "yes", 1, ifelse(entry == "no", 0)) %>% 
+  distinct(transit_df$line) %>% 
+  sum(ADA)/length()
 ```
+
+```{r eval=FALSE}
+trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+                                sheetName = "Mr.TrashWheel", 
+                                range = cell_cols("A:N")
+                                skip = row_number(1))
+ skimr::skim(trash_data)
+```
+
+
+
+
+
+
 
 
 
