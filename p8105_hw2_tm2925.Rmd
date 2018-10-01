@@ -10,18 +10,46 @@ library(janitor)
 library(readxl)
 ```
 
+##Problem 1
+
 ```{r read in data1}
-transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") 
+transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names()
   skimr::skim(transit_data)
 ```
 
 ```{r tidy transit data}
-  select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ADA) %>% 
-  gather(transit_data, key = route, value = route_number, route1:route11) %>% 
-  ifelse(entry == "yes", 1, ifelse(entry == "no", 0)) %>% 
-  distinct(transit_df$line) %>% 
-  sum(ADA)/length()
+transit_data =
+  select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
+  gather(key = "line", value = "route", route1:route11) %>% 
 ```
+
+mutate(entry_logical = ifelse(entry == "YES", TRUE)) %>% 
+
+```{r problem 1 questions}
+transit_data %>% 
+#distinct stations
+  distinct(station_name) %>% 
+#number of stations that are ADA compliant
+  sum(ada) %>% 
+#proportion of station entrances / exits without vending allow entrance
+  filter(vending == "NO") %>% 
+  sum(entry_logical)/length(entrance_type)
+  mean(entry_logical)
+#taking mean of logical variable gives you proportion of TRUE values.
+```
+
+Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant
+```{r data1 reformat}
+
+
+filter(route = "A")
+distinct(station_name)
+sum(ada)
+```
+
+
+# Problem 2
 
 ```{r eval=FALSE}
 trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
@@ -29,9 +57,11 @@ trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals201
                                 range = cell_cols("A:N")
                                 skip = row_number(1))
  skimr::skim(trash_data)
+ 
+ filter(trash_data, !is.na(dumpster))
 ```
 
-```{r}
+```{r read in data2}
 precip_2017 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
                                 sheet = 3)
 filter(precip_2017, !is.na(total))
@@ -44,7 +74,7 @@ filter(precip_2016, !is.na(total))
 mutate(precip_2016, 
        year = 2016)
 
-merge(precip_2017, precip_2016, month.name)
+precip_data = left_join(precip_2017, precip_2016, month.date)
 ```
 
 
