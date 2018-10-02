@@ -22,9 +22,9 @@ transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Dat
 transit_data =
   select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
   gather(key = "line", value = "route", route1:route11) %>% 
+  mutate(entry_logical = ifelse(entry == "YES", TRUE), (ifelse(entry == "NO", FALSE)))
 ```
 
-mutate(entry_logical = ifelse(entry == "YES", TRUE)) %>% 
 
 ```{r problem 1 questions}
 transit_data %>% 
@@ -54,27 +54,33 @@ sum(ada)
 ```{r eval=FALSE}
 trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
                                 sheet = 1, 
-                                range = cell_cols("A:N")
-                                skip = row_number(1))
- skimr::skim(trash_data)
- 
- filter(trash_data, !is.na(dumpster))
+                                range = cell_cols("A:N"),
+                                skip = row_number(1)) %>% 
+janitor::clean_names() 
+skimr::skim(trash_data)
+filter(trash_data, !is.na(dumpster))
 ```
 
-```{r read in data2}
+```{r read in data2_2017}
 precip_2017 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
-                                sheet = 3)
-filter(precip_2017, !is.na(total))
-mutate(precip_2017, 
-       year = 2017)
+                                sheet = 3,
+                                skip = row_number(1)) %>% 
+janitor::clean_names()
+filter(precip_2017, !is.na(total)) 
+filter(precip_2017, !is.na(month)) %>% 
+mutate(year = 2017)
 
 precip_2016 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
-                                sheet = 4)
-filter(precip_2016, !is.na(total))
-mutate(precip_2016, 
-       year = 2016)
+                                sheet = 4,
+                                skip = row_number(1)) %>% 
+janitor::clean_names()
+filter(precip_2016, !is.na(total)) 
+filter(precip_2016, !is.na(month)) %>% 
+mutate(year = 2016)
 
-precip_data = left_join(precip_2017, precip_2016, month.date)
+precip_data = left_join(precip_2017, precip_2016, by = "month")
+colnames(precip_data)[2] = "2017"
+colnames(precip_data)[3] = "2016"
 ```
 
 
