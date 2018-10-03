@@ -22,7 +22,7 @@ transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Dat
 ```{r}
 transit_data_select = select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
   gather(route1:route11, key = "route", value = "route_lines") %>% 
-  mutate(entry_logical = ifelse(entry = "YES"))
+  mutate(entry_logical = recode(entry, `YES` = "TRUE", `NO` = "FALSE")) 
 ```
 
 ```{r problem 1 questions}
@@ -35,16 +35,16 @@ transit_data %>%
   filter(vending == "NO") %>% 
   sum(entry_logical)/length(entrance_type)
   mean(entry_logical)
-#taking mean of logical variable gives you proportion of TRUE values.
+  #taking mean of logical variable gives you proportion of TRUE values.
 ```
 
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant
 ```{r data1 reformat}
-
-
-filter(route = "A")
-distinct(station_name)
-sum(ada)
+transit_data_select %>% 
+separate( ) %>% 
+filter(route_lines = "A") %>% 
+distinct(station_name) %>% 
+mean(ada)
 ```
 
 
@@ -55,10 +55,11 @@ trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals201
                                 sheet = 1, 
                                 range = cell_cols("A:N"),
                                 skip = row_number(1)) %>% 
-janitor::clean_names() 
-skimr::skim(trash_data)
-gather(trash_data, plastic_bottles:sports_balls, key = "trash_type", value = "trash_quantity") %>% 
-filter(!is.na(dumpster)) %>% 
+janitor::clean_names()
+skimr::skim(trash_data) 
+
+gather(trash_data, "trash_type", value = "trash_quantity", plastic_bottles:sports_balls) 
+filter(trash_data, !is.na(dumpster)) 
 round(sports_balls, digits = 0)
 as.integer(sports_balls)
 ```
@@ -85,6 +86,17 @@ colnames(precip_data)[2] = "2017"
 colnames(precip_data)[3] = "2016"
 ```
 
+#Problem 3
+
+```{r}
+library(p8105.datasets)
+data("brfss_smart2010") %>% 
+
+
+
+
+
+```
 
 
 
