@@ -2,7 +2,6 @@
 title: "Homework 2 (tm2925)"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -20,20 +19,19 @@ transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Dat
 
 
 ```{r}
-transit_data_select = select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
+transit_data_select = 
+  select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
   gather(route1:route11, key = "route", value = "route_lines") %>% 
   mutate(entry_logical = recode(entry, `YES` = "TRUE", `NO` = "FALSE")) 
 ```
 
 ```{r problem 1 questions}
-transit_data %>% 
-#distinct stations
-  distinct(station_name) %>% 
+transit_data_select %>% 
+  n_distinct(station_name) %>% 
 #number of stations that are ADA compliant
   sum(ada) %>% 
 #proportion of station entrances / exits without vending allow entrance
   filter(vending == "NO") %>% 
-  sum(entry_logical)/length(entrance_type)
   mean(entry_logical)
   #taking mean of logical variable gives you proportion of TRUE values.
 ```
@@ -41,9 +39,8 @@ transit_data %>%
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant
 ```{r data1 reformat}
 transit_data_select %>% 
-separate( ) %>% 
-filter(route_lines = "A") %>% 
-distinct(station_name) %>% 
+filter(route_lines == "A") %>% 
+n_distinct(station_name) %>% 
 mean(ada)
 ```
 
@@ -90,15 +87,16 @@ colnames(precip_data)[3] = "2016"
 
 ```{r}
 library(p8105.datasets)
-data("brfss_smart2010") %>% 
-
-
-
-
-
+data("brfss_smart2010")  
+brfss_df = tibble(
+  janitor::clean_names(brfss_smart2010),
+  filter(brfss_smart2010, Topic == "Overall Health"),
+  select(brfss_smart2010, -Class, -Topic, -Question, -Sample_Size, -Confidence_limit_Low::GeoLocation), 
+  spread(brfss_smart2010, Response, Data_value)
+  )
 ```
 
-
+mutate(Good_Response =  )
 
 
 
