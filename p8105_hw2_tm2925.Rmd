@@ -27,12 +27,23 @@ transit_data_select =
 
 ```{r problem 1 questions}
 transit_data_select %>% 
-  n_distinct(station_name) %>% 
+  distinct(station_name, line)
+#465 distinct stations
+```
+
+```{r}
 #number of stations that are ADA compliant
-  sum(ada) %>% 
+transit_data_select %>% 
+  sum(ada)
+```
+
+```{r}
 #proportion of station entrances / exits without vending allow entrance
+transit_data_select %>%   
   filter(vending == "NO") %>% 
+  nrow() %>% 
   mean(entry_logical)
+
   #taking mean of logical variable gives you proportion of TRUE values.
 ```
 
@@ -40,8 +51,7 @@ Reformat data so that route number and route name are distinct variables. How ma
 ```{r data1 reformat}
 transit_data_select %>% 
 filter(route_lines == "A") %>% 
-n_distinct(station_name) %>% 
-mean(ada)
+distinct(station_name, ada = TRUE)
 ```
 
 
@@ -56,9 +66,8 @@ janitor::clean_names()
 skimr::skim(trash_data) 
 
 gather(trash_data, "trash_type", value = "trash_quantity", plastic_bottles:sports_balls) 
-filter(trash_data, !is.na(dumpster)) 
-round(sports_balls, digits = 0)
-as.integer(sports_balls)
+filter(trash_data, !is.na(dumpster)) %>% 
+mutate(as.integer(sports_balls))
 ```
 
 ```{r read in data2_2017}
@@ -87,16 +96,21 @@ colnames(precip_data)[3] = "2016"
 
 ```{r}
 library(p8105.datasets)
-data("brfss_smart2010")  
-brfss_df = tibble(
-  janitor::clean_names(brfss_smart2010),
-  filter(brfss_smart2010, Topic == "Overall Health"),
-  select(brfss_smart2010, -Class, -Topic, -Question, -Sample_Size, -Confidence_limit_Low::GeoLocation), 
-  spread(brfss_smart2010, Response, Data_value)
-  )
+data(brfss_smart2010) 
+brfss_smart2010 = brfss_smart2010 %>% 
+  janitor::clean_names() 
 ```
 
-mutate(Good_Response =  )
+```{r}
+brfss = filter(brfss_smart2010, topic == "Overall Health") %>%  
+  
+  select(-class, -topic, -question, -sample_size, -confidence_limit_low, -confidence_limit_high, -display_order, -data_value_unit, -data_value_type, -data_value_footnote_symbol, -data_value_footnote, -data_source, -class_id, -topic_id, -location_id, -question_id, -respid, -geo_location) %>% 
+  spread(response, data_value) %>% 
+janitor::clean_names() %>% 
+mutate(good_response = excellent + very_good)
+```
+
+
 
 
 
