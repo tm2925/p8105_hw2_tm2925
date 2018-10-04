@@ -35,26 +35,25 @@ sum(transit_data$ada, na.rm = TRUE)
 
 ```{r}
 #proportion of station entrances / exits without vending allow entrance
-transit_data_select %>%   
+transit_data_select  %>%  
   filter(vending == "NO") %>% 
-  nrow() %>% 
-  mean(transit_data_select$entry_logical)
-
-  #taking mean of logical variable gives you proportion of TRUE values.
+  mean(entry_logical, na.rm = TRUE)
 ```
 
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant
 ```{r data1 reformat}
 transit_data_select %>% 
 filter(route_lines == "A") %>% 
+#273 stations serve A train
 distinct(station_name, ada = TRUE)
+#56 station that serve the A train are ADA compliant
 ```
 
 
 # Problem 2
 
 ```{r eval=FALSE}
-trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+trash_data = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
                                 sheet = 1, 
                                 range = cell_cols("A:N"),
                                 skip = row_number(1)) %>% 
@@ -67,7 +66,7 @@ mutate(as.integer(sports_balls))
 ```
 
 ```{r read in data2_2017}
-precip_2017 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+precip_2017 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
                                 sheet = 3,
                                 skip = row_number(1)) %>% 
 janitor::clean_names()
@@ -75,7 +74,7 @@ filter(precip_2017, !is.na(total))
 filter(precip_2017, !is.na(month)) %>% 
 mutate(year = 2017)
 
-precip_2016 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+precip_2016 = readxl::read_excel(path = "./data2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
                                 sheet = 4,
                                 skip = row_number(1)) %>% 
 janitor::clean_names()
