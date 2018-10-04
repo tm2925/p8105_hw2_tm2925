@@ -27,14 +27,10 @@ transit_data_select =
 
 ```{r problem 1 questions}
 transit_data_select %>% 
-  distinct(station_name, line)
+distinct(station_name, line) 
 #465 distinct stations
-```
-
-```{r}
-#number of stations that are ADA compliant
-transit_data_select %>% 
-  sum(ada)
+sum(transit_data$ada, na.rm = TRUE)
+#468 stations ADA compliant
 ```
 
 ```{r}
@@ -42,7 +38,7 @@ transit_data_select %>%
 transit_data_select %>%   
   filter(vending == "NO") %>% 
   nrow() %>% 
-  mean(entry_logical)
+  mean(transit_data_select$entry_logical)
 
   #taking mean of logical variable gives you proportion of TRUE values.
 ```
@@ -105,9 +101,10 @@ brfss_smart2010 = brfss_smart2010 %>%
 brfss = filter(brfss_smart2010, topic == "Overall Health") %>%  
   
   select(-class, -topic, -question, -sample_size, -confidence_limit_low, -confidence_limit_high, -display_order, -data_value_unit, -data_value_type, -data_value_footnote_symbol, -data_value_footnote, -data_source, -class_id, -topic_id, -location_id, -question_id, -respid, -geo_location) %>% 
+  
   spread(response, data_value) %>% 
-janitor::clean_names() %>% 
-mutate(good_response = excellent + very_good)
+  janitor::clean_names() %>% 
+  mutate(good_response = excellent + very_good)
 ```
 
 
