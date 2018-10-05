@@ -17,13 +17,14 @@ transit_data = read_csv(file = "./data1/NYC_Transit_Subway_Entrance_And_Exit_Dat
   skimr::skim(transit_data)
 ```
 
-
 ```{r}
 transit_data_select = 
   select(transit_data, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
-  gather(route1:route11, key = "route", value = "route_lines") %>% 
-  mutate(entry_logical = recode(entry, `YES` = "TRUE", `NO` = "FALSE")) 
+  gather(route1:route11, key = "route", value = "route_lines") 
+#
 ```
+
+The transit_data set has been tidyed by selecting the variables of interest, gathering the columns for the 11 route lines, and collapsing them into a single column, and creating a new variable that converts the entry variable from a character vector into a logical vector. The transit_data_select dataset contains `r nrow(transit_data_select)` observations and `r ncol(transit_data_select)` variables.
 
 ```{r problem 1 questions}
 transit_data_select %>% 
@@ -36,17 +37,18 @@ sum(transit_data$ada, na.rm = TRUE)
 ```{r}
 #proportion of station entrances / exits without vending allow entrance
 transit_data_select  %>%  
-  filter(vending == "NO") %>% 
-  mean(entry_logical, na.rm = TRUE)
+  filter(vending == "NO") 
+
+##transit_data_select$entry_logical <- as.logical(transit_data_select$entry_logical)
+##mutate(entry_logical = as.logical(entry))#
 ```
 
-Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant
 ```{r data1 reformat}
 transit_data_select %>% 
 filter(route_lines == "A") %>% 
 #273 stations serve A train
 distinct(station_name, ada = TRUE)
-#56 station that serve the A train are ADA compliant
+#56 stations that serve the A train are ADA compliant
 ```
 
 
@@ -62,7 +64,7 @@ skimr::skim(trash_data)
 
 gather(trash_data, "trash_type", value = "trash_quantity", plastic_bottles:sports_balls) 
 filter(trash_data, !is.na(dumpster)) %>% 
-mutate(as.integer(sports_balls))
+mutate(balls_integer = as.integer(sports_balls)) %>% View
 ```
 
 ```{r read in data2_2017}
@@ -87,6 +89,11 @@ colnames(precip_data)[2] = "2017"
 colnames(precip_data)[3] = "2016"
 ```
 
+The Trash dataset describes the amount, volume and type of trash collected by date. It
+contains `r nrow(trash_data)` observations and `r ncol(trash_data)` variables. The Precipitation dataset describes the amount of rain in each year, by month. It contains `r nrow(precip_data)` observations and `r ncol(precip_data)` variables. The total amount of precipiatin in 2017 was `r sum(2017$precip_data)`. The median number of sports balls in 2016 was `r 
+filter(precip_data, 2016)
+median(balls_integer$precip_data)`.  
+
 #Problem 3
 
 ```{r}
@@ -106,6 +113,32 @@ brfss = filter(brfss_smart2010, topic == "Overall Health") %>%
   mutate(good_response = excellent + very_good)
 ```
 
+```{r}
+brfss %>% 
+  distinct(locationabbr) 
+#51 unique locations 
+brfss %>% 
+  group_by(locationabbr) %>% 
+  summarize(n = n()) %>% 
+  arrange(desc(n))
+#New Jersey is observed the most (146 times)
+```
+
+```{r}
+library(lattice)
+
+brfss %>% 
+  filter(year == 2002) %>% 
+  median(excellent) %>% 
+  histogram(excellent, brfss)
+
+```
+
+```{r}
+brfss %>% 
+  filter by locationdesc
+  ggplot(aes(x = year, y = excellent , color =  ))
+```
 
 
 
